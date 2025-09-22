@@ -1,7 +1,6 @@
 # Simple autonomous-vehicle-ai-project
-Building AI course project
-##Summary 
-## Project Overview
+Building AI course project 
+## Summary
 
 This project implements a small-scale autonomous vehicle capable of:
 - Lane following using computer vision
