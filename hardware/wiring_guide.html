@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Vehicle - Hardware Wiring Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #007ACC 0%, #005a9e 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007ACC;
+            border-bottom: 2px solid #007ACC;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: #005a9e;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .component-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .component-card h4 {
+            color: #007ACC;
+            margin-bottom: 0.5rem;
+        }
+
+        .wiring-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .wiring-table th,
+        .wiring-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .wiring-table th {
+            background-color: #007ACC;
+            color: white;
+        }
+
+        .wiring-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .wiring-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .pin-highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .diagram-container {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .wiring-diagram {
+            background: white;
+            border: 2px solid #007ACC;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 1rem auto;
+            max-width: 100%;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block-light {
+            background: #f8f9fa;
+            color: #333;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #e9ecef;
+        }
+
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #007ACC;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .component-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .component-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .component-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        .connection-diagram {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .pin-connection {
+            background: #e9ecef;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .wire-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .communication-protocol {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .protocol-step {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            border-left: 4px solid #007ACC;
+        }
+
+        /* SVG Styles */
+        .arduino-rect {
+            fill: #00979D;
+            stroke: #007ACC;
+            stroke-width: 2;
+        }
+
+        .raspberry-rect {
+            fill: #C51A4A;
+            stroke: #A0163D;
+            stroke-width: 2;
+        }
+
+        .sensor-rect {
+            fill: #4CAF50;
+            stroke: #388E3C;
+            stroke-width: 2;
+        }
+
+        .motor-rect {
+            fill: #FF9800;
+            stroke: #F57C00;
+            stroke-width: 2;
+        }
+
+        .power-rect {
+            fill: #F44336;
+            stroke: #D32F2F;
+            stroke-width: 2;
+        }
+
+        .camera-rect {
+            fill: #9C27B0;
+            stroke: #7B1FA2;
+            stroke-width: 2;
+        }
+
+        .wire {
+            stroke: #666;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .wire-red {
+            stroke: #F44336;
+        }
+
+        .wire-black {
+            stroke: #212121;
+        }
+
+        .wire-blue {
+            stroke: #2196F3;
+        }
+
+        .wire-green {
+            stroke: #4CAF50;
+        }
+
+        .wire-yellow {
+            stroke: #FFEB3B;
+        }
+
+        .wire-orange {
+            stroke: #FF9800;
+        }
+
+        .wire-purple {
+            stroke: #9C27B0;
+        }
+
+        .wire-white {
+            stroke: #FFFFFF;
+            stroke-dasharray: 5, 5;
+        }
+
+        .wire-gray {
+            stroke: #9E9E9E;
+        }
+
+        .wire-brown {
+            stroke: #795548;
+        }
+
+        .pin-label {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            fill: #333;
+        }
+
+        .component-label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            fill: white;
+            text-anchor: middle;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .wiring-diagram {
+                transform: scale(0.8);
+                transform-origin: top center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Autonomous Vehicle Hardware Wiring Guide</h1>
+            <p class="subtitle">Complete wiring instructions for Arduino-based self-driving car with Raspberry Pi AI</p>
+        </header>
+
+        <!-- Previous sections remain the same until Communication Protocol -->
+
+        <div class="section">
+            <h2>Communication Protocol</h2>
+
+            <div class="communication-protocol">
+                <h3>Data Exchange Format</h3>
+
+                <div class="protocol-step">
+                    <h4>Raspberry Pi → Arduino (Commands)</h4>
+                    <div class="code-block-light">
+                        SPEED:50,STEER:20\n
+                    </div>
+                    <p><strong>Format:</strong> "SPEED:[value],STEER:[value]"</p>
+                    <p><strong>Example:</strong> "SPEED:75,STEER:-15" - Move forward at 75% speed, turn left 15 degrees
+                    </p>
+                </div>
+
+                <div class="protocol-step">
+                    <h4>Arduino → Raspberry Pi (Sensor Data)</h4>
+                    <div class="code-block-light">
+                        DIST:25.5,LIR:120,RIR:80\n
+                    </div>
+                    <p><strong>Format:</strong> "DIST:[cm],LIR:[value],RIR:[value]"</p>
+                    <p><strong>Example:</strong> "DIST:30.2,LIR:150,RIR:45" - Object 30.2cm away, left IR: 150, right
+                        IR: 45</p>
+                </div>
+
+                <div class="protocol-step">
+                    <h4>Python Code (Raspberry Pi)</h4>
+                    <div class="code-block-light">
+                        import serial
+                        import time
+
+                        # Initialize serial connection
+                        arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+                        time.sleep(2) # Wait for connection
+
+                        def send_command(speed, steering):
+                        command = f"SPEED:{speed},STEER:{steering}\n"
+                        arduino.write(command.encode())
+
+                        def read_sensors():
+                        if arduino.in_waiting > 0:
+                        data = arduino.readline().decode('utf-8').strip()
+                        return parse_sensor_data(data)
+                        return None
+
+                        def parse_sensor_data(data):
+                        # Example: "DIST:25.5,LIR:120,RIR:80"
+                        sensors = {}
+                        try:
+                        parts = data.split(',')
+                        for part in parts:
+                        key, value = part.split(':')
+                        sensors[key] = float(value)
+                        except:
+                        pass
+                        return sensors
+                    </div>
+                </div>
+
+                <div class="protocol-step">
+                    <h4>Arduino Code</h4>
+                    <div class="code-block-light">
+                        // Motor control pins
+                        const int motorLeft = 5;
+                        const int motorRight = 6;
+                        const int steeringServo = 3;
+
+                        // Sensor pins
+                        const int trigPin = 11;
+                        const int echoPin = 12;
+                        const int irLeft = A0;
+                        const int irRight = A1;
+
+                        void setup() {
+                        Serial.begin(9600);
+                        // Initialize pins...
+                        }
+
+                        void loop() {
+                        // Read sensors
+                        float distance = readUltrasonic();
+                        int leftIR = analogRead(irLeft);
+                        int rightIR = analogRead(irRight);
+
+                        // Send sensor data to Raspberry Pi
+                        Serial.print("DIST:");
+                        Serial.print(distance);
+                        Serial.print(",LIR:");
+                        Serial.print(leftIR);
+                        Serial.print(",RIR:");
+                        Serial.println(rightIR);
+
+                        // Check for commands from Raspberry Pi
+                        if (Serial.available() > 0) {
+                        String command = Serial.readStringUntil('\n');
+                        processCommand(command);
+                        }
+
+                        delay(50);
+                        }
+
+                        void processCommand(String command) {
+                        // Parse commands like "SPEED:50,STEER:20"
+                        int speed = 0;
+                        int steering = 0;
+
+                        if (command.startsWith("SPEED:")) {
+                        int commaIndex = command.indexOf(',');
+                        if (commaIndex != -1) {
+                        speed = command.substring(6, commaIndex).toInt();
+                        steering = command.substring(commaIndex + 7).toInt();
+                        }
+                        }
+
+                        // Execute commands
+                        setMotorSpeed(speed);
+                        setSteering(steering);
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="diagram-container">
+                <svg class="wiring-diagram" width="700" height="200" viewBox="0 0 700 200">
+                    <!-- Raspberry Pi -->
+                    <rect x="50" y="50" width="100" height="60" class="raspberry-rect" rx="5" />
+                    <text x="100" y="75" class="component-label">RASPBERRY PI</text>
+
+                    <!-- USB Connection -->
+                    <rect x="150" y="60" width="100" height="10" fill="#E0E0E0" stroke="#9E9E9E" stroke-width="1" />
+                    <text x="200" y="55" class="pin-label">USB Serial Connection</text>
+
+                    <!-- Arduino -->
+                    <rect x="250" y="50" width="100" height="60" class="arduino-rect" rx="5" />
+                    <text x="300" y="75" class="component-label">ARDUINO</text>
+
+                    <!-- Data Flow -->
+                    <line x1="100" y1="110" x2="300" y2="110" class="wire wire-blue" marker-end="url(#arrowhead)" />
+                    <text x="200" y="105" class="pin-label">Commands: "SPEED:50,STEER:20"</text>
+
+                    <line x1="300" y1="130" x2="100" y2="130" class="wire wire-green" marker-end="url(#arrowhead)" />
+                    <text x="200" y="135" class="pin-label">Sensor Data: "DIST:25,LIR:120,RIR:80"</text>
+
+                    <!-- Protocol Labels -->
+                    <text x="350" y="30" class="pin-label" font-weight="bold">Communication Protocol:</text>
+                    <text x="350" y="45" class="pin-label">• Baud Rate: 9600</text>
+                    <text x="350" y="60" class="pin-label">• Data Format: CSV-like</text>
+                    <text x="350" y="75" class="pin-label">• End Character: Newline (\n)</text>
+                    <text x="350" y="90" class="pin-label">• Update Rate: 20Hz</text>
+                </svg>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Complete Connection Summary</h2>
+            <div class="connection-diagram">
+                RASPBERRY PI 4 CONNECTIONS:
+                ===========================
+                📷 CAMERA → CSI Camera Port (15-pin ribbon cable)
+                🔌 ARDUINO → USB Port (USB A to B cable)
+                ⚡ POWER → USB-C Port (5V 3A power supply)
+                🌐 NETWORK → Ethernet Port or WiFi
+
+                ARDUINO UNO PINOUT:
+                ===================
+                DIGITAL PINS:
+                ─────────────
+                PIN 3 (PWM) → SERVO Signal (Yellow)
+                PIN 5 (PWM) → L298N ENA - Left Motor Speed (Yellow)
+                PIN 6 (PWM) → L298N ENB - Right Motor Speed (White)
+                PIN 7 → L298N IN1 - Left Motor Forward (Orange)
+                PIN 8 → L298N IN2 - Left Motor Reverse (Red)
+                PIN 9 → L298N IN3 - Right Motor Forward (Brown)
+                PIN 10 → L298N IN4 - Right Motor Reverse (Black)
+                PIN 11 → HC-SR04 Trig (Blue)
+                PIN 12 → HC-SR04 Echo (Green)
+
+                ANALOG PINS:
+                ────────────
+                A0 → IR Left Sensor (Purple)
+                A1 → IR Right Sensor (Gray)
+
+                POWER DISTRIBUTION:
+                ===================
+                BATTERY 12V → L298N VCC (Red thick wire)
+                BATTERY GND → L298N GND & Arduino GND (Black)
+                POWER BANK 5V → Raspberry Pi USB-C
+                ARDUINO 5V → All Sensors VCC
+
+                COMMUNICATION:
+                ==============
+                Raspberry Pi ↔ Arduino via USB Serial
+                Baud Rate: 9600
+                Protocol: Custom CSV-like format
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Software Setup</h2>
+
+            <h3>Raspberry Pi Setup</h3>
+            <div class="code-block">
+                # Install required packages
+                sudo apt update
+                sudo apt install python3-pip python3-opencv python3-picamera2
+
+                # Install Python libraries
+                pip3 install pyserial numpy torch torchvision
+
+                # Enable camera and serial interface
+                sudo raspi-config
+                # → Interface Options → Camera → Enable
+                # → Interface Options → Serial Port → Enable
+            </div>
+
+            <h3>Testing Communication</h3>
+            <div class="code-block-light">
+                # Test serial communication on Raspberry Pi
+                python3 -c "
+                import serial
+                import time
+
+                arduino = serial.Serial('/dev/ttyUSB0', 9600)
+                time.sleep(2)
+
+                # Send test command
+                arduino.write(b'SPEED:50,STEER:0\n')
+                time.sleep(0.1)
+
+                # Read response
+                if arduino.in_waiting > 0:
+                print('Received:', arduino.readline().decode())
+                "
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Autonomous Self-Driving Car Project</strong> &copy; 2024</p>
+            <p>Building AI Course - University of Helsinki</p>
+            <p>Last Updated: December 2024 | Version: 3.1</p>
+            <p><a href="../README.md">Back to Main Project</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Add print functionality
+            const printButton = document.createElement('button');
+            printButton.textContent = 'Print This Guide';
+            printButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #007ACC;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            `;
+            printButton.addEventListener('click', () => window.print());
+            document.body.appendChild(printButton);
+
+            // Add copy functionality for code blocks
+            document.querySelectorAll('.code-block-light').forEach(block => {
+                block.addEventListener('click', function () {
+                    const text = this.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        const original = this.style.backgroundColor;
+                        this.style.backgroundColor = '#4CAF50';
+                        this.style.color = 'white';
+                        setTimeout(() => {
+                            this.style.backgroundColor = original;
+                            this.style.color = '#333';
+                        }, 500);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
