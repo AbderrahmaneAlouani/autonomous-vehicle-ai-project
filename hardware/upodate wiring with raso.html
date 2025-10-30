@@ -1,0 +1,900 @@
+
+## Updated HTML Wiring Guide with Raspberry Pi and Camera (hardware/wiring_guide.html)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Vehicle - Hardware Wiring Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #007ACC 0%, #005a9e 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #007ACC;
+            border-bottom: 2px solid #007ACC;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: #005a9e;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .component-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .component-card h4 {
+            color: #007ACC;
+            margin-bottom: 0.5rem;
+        }
+
+        .wiring-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .wiring-table th,
+        .wiring-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .wiring-table th {
+            background-color: #007ACC;
+            color: white;
+        }
+
+        .wiring-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .wiring-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .pin-highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .diagram-container {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .wiring-diagram {
+            background: white;
+            border: 2px solid #007ACC;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 1rem auto;
+            max-width: 100%;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #007ACC;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .component-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .component-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .component-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        .connection-diagram {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .pin-connection {
+            background: #e9ecef;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .wire-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* SVG Styles */
+        .arduino-rect {
+            fill: #00979D;
+            stroke: #007ACC;
+            stroke-width: 2;
+        }
+
+        .raspberry-rect {
+            fill: #C51A4A;
+            stroke: #A0163D;
+            stroke-width: 2;
+        }
+
+        .sensor-rect {
+            fill: #4CAF50;
+            stroke: #388E3C;
+            stroke-width: 2;
+        }
+
+        .motor-rect {
+            fill: #FF9800;
+            stroke: #F57C00;
+            stroke-width: 2;
+        }
+
+        .power-rect {
+            fill: #F44336;
+            stroke: #D32F2F;
+            stroke-width: 2;
+        }
+
+        .camera-rect {
+            fill: #9C27B0;
+            stroke: #7B1FA2;
+            stroke-width: 2;
+        }
+
+        .wire {
+            stroke: #666;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .wire-red { stroke: #F44336; }
+        .wire-black { stroke: #212121; }
+        .wire-blue { stroke: #2196F3; }
+        .wire-green { stroke: #4CAF50; }
+        .wire-yellow { stroke: #FFEB3B; }
+        .wire-orange { stroke: #FF9800; }
+        .wire-purple { stroke: #9C27B0; }
+        .wire-white { stroke: #FFFFFF; stroke-dasharray: 5,5; }
+        .wire-gray { stroke: #9E9E9E; }
+        .wire-brown { stroke: #795548; }
+
+        .pin-label {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            fill: #333;
+        }
+
+        .component-label {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            fill: white;
+            text-anchor: middle;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .wiring-diagram {
+                transform: scale(0.8);
+                transform-origin: top center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Autonomous Vehicle Hardware Wiring Guide</h1>
+            <p class="subtitle">Complete wiring instructions for Arduino-based self-driving car with Raspberry Pi AI</p>
+        </header>
+
+        <div class="section">
+            <h2>Project Overview</h2>
+            <p>This guide provides detailed wiring instructions for building an autonomous self-driving car using Arduino Uno for motor control and Raspberry Pi 4 for AI processing with computer vision.</p>
+        </div>
+
+        <div class="section">
+            <h2>Required Components</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h4>Microcontrollers</h4>
+                    <ul class="component-list">
+                        <li>Arduino Uno R3 ×1</li>
+                        <li>Raspberry Pi 4 (4GB+) ×1</li>
+                        <li>USB Cable A to B ×1</li>
+                        <li>MicroSD Card (32GB+) ×1</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>Vision & Sensors</h4>
+                    <ul class="component-list">
+                        <li>Raspberry Pi Camera V2 ×1</li>
+                        <li>HC-SR04 Ultrasonic Sensor ×1</li>
+                        <li>IR Infrared Sensors ×2</li>
+                        <li>MPU-6050 Gyroscope ×1</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>Motors & Control</h4>
+                    <ul class="component-list">
+                        <li>DC Gear Motors ×2</li>
+                        <li>L298N Motor Driver ×1</li>
+                        <li>SG90 Servo Motor ×1</li>
+                        <li>Motor Wheels ×2</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>Power & Chassis</h4>
+                    <ul class="component-list">
+                        <li>Li-ion Battery Pack (12V) ×1</li>
+                        <li>USB-C Power Bank (5V) ×1</li>
+                        <li>Robot Car Chassis ×1</li>
+                        <li>Jumper Wires (Various)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Complete System Architecture</h2>
+            <div class="diagram-container">
+                <svg class="wiring-diagram" width="900" height="500" viewBox="0 0 900 500">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                        </marker>
+                        <marker id="data-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#2196F3"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Raspberry Pi -->
+                    <rect x="50" y="50" width="120" height="160" class="raspberry-rect" rx="5"/>
+                    <text x="110" y="70" class="component-label">RASPBERRY PI 4</text>
+                    
+                    <!-- Raspberry Pi Ports -->
+                    <rect x="170" y="60" width="8" height="12" fill="#666"/>
+                    <text x="183" y="67" class="pin-label">USB-C Power</text>
+                    
+                    <rect x="170" y="80" width="8" height="12" fill="#666"/>
+                    <text x="183" y="87" class="pin-label">Camera Port</text>
+                    
+                    <rect x="170" y="100" width="8" height="12" fill="#666"/>
+                    <text x="183" y="107" class="pin-label">USB to Arduino</text>
+                    
+                    <rect x="170" y="120" width="8" height="12" fill="#666"/>
+                    <text x="183" y="127" class="pin-label">Ethernet/WiFi</text>
+
+                    <!-- Camera -->
+                    <rect x="50" y="250" width="100" height="60" class="camera-rect" rx="5"/>
+                    <text x="100" y="270" class="component-label">PI CAMERA</text>
+
+                    <!-- Arduino Uno -->
+                    <rect x="300" y="50" width="120" height="200" class="arduino-rect" rx="5"/>
+                    <text x="360" y="70" class="component-label">ARDUINO UNO</text>
+                    
+                    <!-- Arduino Pins -->
+                    <rect x="420" y="60" width="8" height="12" fill="#666"/>
+                    <text x="433" y="67" class="pin-label">PIN 3 (Servo)</text>
+                    
+                    <rect x="420" y="80" width="8" height="12" fill="#666"/>
+                    <text x="433" y="87" class="pin-label">PIN 5 (ENA)</text>
+                    
+                    <rect x="420" y="100" width="8" height="12" fill="#666"/>
+                    <text x="433" y="107" class="pin-label">PIN 6 (ENB)</text>
+                    
+                    <rect x="420" y="120" width="8" height="12" fill="#666"/>
+                    <text x="433" y="127" class="pin-label">PIN 7 (IN1)</text>
+                    
+                    <rect x="420" y="140" width="8" height="12" fill="#666"/>
+                    <text x="433" y="147" class="pin-label">PIN 8 (IN2)</text>
+                    
+                    <rect x="420" y="160" width="8" height="12" fill="#666"/>
+                    <text x="433" y="167" class="pin-label">PIN 9 (IN3)</text>
+                    
+                    <rect x="420" y="180" width="8" height="12" fill="#666"/>
+                    <text x="433" y="187" class="pin-label">PIN 10 (IN4)</text>
+                    
+                    <rect x="420" y="200" width="8" height="12" fill="#666"/>
+                    <text x="433" y="207" class="pin-label">PIN 11 (Trig)</text>
+                    
+                    <rect x="420" y="220" width="8" height="12" fill="#666"/>
+                    <text x="433" y="227" class="pin-label">PIN 12 (Echo)</text>
+
+                    <!-- L298N Motor Driver -->
+                    <rect x="550" y="50" width="150" height="120" class="motor-rect" rx="5"/>
+                    <text x="625" y="70" class="component-label">L298N DRIVER</text>
+                    
+                    <!-- Motors -->
+                    <rect x="750" y="80" width="80" height="40" class="motor-rect" rx="3"/>
+                    <text x="790" y="100" class="component-label">MOTOR A</text>
+                    
+                    <rect x="750" y="140" width="80" height="40" class="motor-rect" rx="3"/>
+                    <text x="790" y="160" class="component-label">MOTOR B</text>
+
+                    <!-- Sensors -->
+                    <rect x="550" y="200" width="120" height="60" class="sensor-rect" rx="5"/>
+                    <text x="610" y="220" class="component-label">ULTRASONIC</text>
+                    
+                    <rect x="550" y="280" width="80" height="40" class="sensor-rect" rx="3"/>
+                    <text x="590" y="300" class="component-label">IR LEFT</text>
+                    
+                    <rect x="650" y="280" width="80" height="40" class="sensor-rect" rx="3"/>
+                    <text x="690" y="300" class="component-label">IR RIGHT</text>
+                    
+                    <rect x="400" y="280" width="80" height="40" class="sensor-rect" rx="3"/>
+                    <text x="440" y="300" class="component-label">SERVO</text>
+
+                    <!-- Power -->
+                    <rect x="50" y="350" width="100" height="60" class="power-rect" rx="5"/>
+                    <text x="100" y="370" class="component-label">BATTERY 12V</text>
+
+                    <rect x="200" y="350" width="100" height="60" fill="#4CAF50" stroke="#388E3C" stroke-width="2" rx="5"/>
+                    <text x="250" y="370" class="component-label">POWER BANK 5V</text>
+
+                    <!-- Wiring Connections -->
+                    <!-- Raspberry Pi to Arduino (USB Serial) -->
+                    <line x1="170" y1="107" x2="300" y2="150" class="wire wire-blue" stroke-dasharray="5,5"/>
+                    
+                    <!-- Raspberry Pi to Camera -->
+                    <line x1="100" y1="210" x2="100" y2="250" class="wire wire-purple" stroke-width="3"/>
+                    
+                    <!-- Power Connections -->
+                    <line x1="150" y1="380" x2="550" y2="380" class="wire wire-red" stroke-width="3"/>
+                    <line x1="150" y1="400" x2="750" y2="400" class="wire wire-black" stroke-width="3" stroke-dasharray="5,5"/>
+                    
+                    <line x1="250" y1="380" x2="50" y2="150" class="wire wire-red" stroke-width="2"/>
+                    <line x1="250" y1="400" x2="50" y2="170" class="wire wire-black" stroke-width="2" stroke-dasharray="5,5"/>
+
+                    <!-- Arduino to L298N -->
+                    <line x1="420" y1="67" x2="550" y2="90" class="wire wire-yellow"/>
+                    <line x1="420" y1="87" x2="550" y2="100" class="wire wire-white"/>
+                    <line x1="420" y1="107" x2="550" y2="110" class="wire wire-orange"/>
+                    <line x1="420" y1="127" x2="550" y2="120" class="wire wire-red"/>
+                    <line x1="420" y1="147" x2="550" y2="130" class="wire wire-brown"/>
+                    <line x1="420" y1="167" x2="550" y2="140" class="wire wire-black"/>
+
+                    <!-- L298N to Motors -->
+                    <line x1="700" y1="90" x2="750" y2="100" class="wire wire-red" stroke-width="3"/>
+                    <line x1="700" y1="110" x2="750" y2="120" class="wire wire-black" stroke-width="3"/>
+                    <line x1="700" y1="130" x2="750" y2="160" class="wire wire-red" stroke-width="3"/>
+                    <line x1="700" y1="150" x2="750" y2="180" class="wire wire-black" stroke-width="3"/>
+
+                    <!-- Arduino to Sensors -->
+                    <line x1="420" y1="187" x2="550" y2="210" class="wire wire-blue"/>
+                    <line x1="420" y1="207" x2="550" y2="230" class="wire wire-green"/>
+                    <line x1="380" y1="227" x2="550" y2="300" class="wire wire-purple"/>
+                    <line x1="380" y1="247" x2="650" y2="300" class="wire wire-gray"/>
+                    <line x1="380" y1="67" x2="400" y2="300" class="wire wire-yellow"/>
+
+                    <!-- Data Flow Arrows -->
+                    <line x1="280" y1="130" x2="300" y2="130" class="wire wire-blue" marker-end="url(#data-arrow)"/>
+                    <text x="290" y="120" class="pin-label">AI Commands</text>
+                    
+                    <line x1="300" y1="170" x2="280" y2="170" class="wire wire-green" marker-end="url(#data-arrow)"/>
+                    <text x="290" y="185" class="pin-label">Sensor Data</text>
+                    
+                    <line x1="100" y1="130" x2="100" y2="150" class="wire wire-purple" marker-end="url(#data-arrow)"/>
+                    <text x="110" y="140" class="pin-label">Video Stream</text>
+                </svg>
+                <p><em>Figure 1: Complete system architecture with Raspberry Pi and camera integration</em></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Detailed Pin Connections</h2>
+            
+            <h3>Raspberry Pi 4 Connections</h3>
+            <table class="wiring-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Raspberry Pi Port</th>
+                        <th>Description</th>
+                        <th>Cable Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Camera Module</td>
+                        <td><span class="pin-highlight">Camera CSI Port</span></td>
+                        <td>15-pin ribbon cable connection</td>
+                        <td>CSI Ribbon Cable</td>
+                    </tr>
+                    <tr>
+                        <td>Arduino Uno</td>
+                        <td><span class="pin-highlight">USB 2.0/3.0 Port</span></td>
+                        <td>Serial communication for motor control</td>
+                        <td>USB A to B Cable</td>
+                    </tr>
+                    <tr>
+                        <td>Power Supply</td>
+                        <td><span class="pin-highlight">USB-C Power</span></td>
+                        <td>5V 3A power input</td>
+                        <td>USB-C Cable</td>
+                    </tr>
+                    <tr>
+                        <td>Network</td>
+                        <td><span class="pin-highlight">Ethernet / WiFi</span></td>
+                        <td>Internet connectivity for AI models</td>
+                        <td>Ethernet Cable</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Arduino to Motor Driver (L298N)</h3>
+            <table class="wiring-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Arduino Pin</th>
+                        <th>Description</th>
+                        <th>Wire Color</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Motor A Enable</td>
+                        <td><span class="pin-highlight">PIN 5</span> (PWM)</td>
+                        <td>Left motor speed control</td>
+                        <td><span class="wire-color" style="background-color: #FFEB3B;"></span> Yellow</td>
+                    </tr>
+                    <tr>
+                        <td>Motor B Enable</td>
+                        <td><span class="pin-highlight">PIN 6</span> (PWM)</td>
+                        <td>Right motor speed control</td>
+                        <td><span class="wire-color" style="background-color: #FFFFFF; border: 1px solid #ccc;"></span> White</td>
+                    </tr>
+                    <tr>
+                        <td>Motor A Input 1</td>
+                        <td><span class="pin-highlight">PIN 7</span></td>
+                        <td>Left motor direction forward</td>
+                        <td><span class="wire-color" style="background-color: #FF9800;"></span> Orange</td>
+                    </tr>
+                    <tr>
+                        <td>Motor A Input 2</td>
+                        <td><span class="pin-highlight">PIN 8</span></td>
+                        <td>Left motor direction reverse</td>
+                        <td><span class="wire-color" style="background-color: #F44336;"></span> Red</td>
+                    </tr>
+                    <tr>
+                        <td>Motor B Input 1</td>
+                        <td><span class="pin-highlight">PIN 9</span></td>
+                        <td>Right motor direction forward</td>
+                        <td><span class="wire-color" style="background-color: #795548;"></span> Brown</td>
+                    </tr>
+                    <tr>
+                        <td>Motor B Input 2</td>
+                        <td><span class="pin-highlight">PIN 10</span></td>
+                        <td>Right motor direction reverse</td>
+                        <td><span class="wire-color" style="background-color: #212121;"></span> Black</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Sensor Connections to Arduino</h3>
+            <table class="wiring-table">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Arduino Pin</th>
+                        <th>Description</th>
+                        <th>Wire Color</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ultrasonic Trig</td>
+                        <td><span class="pin-highlight">PIN 11</span></td>
+                        <td>Trigger pulse output</td>
+                        <td><span class="wire-color" style="background-color: #2196F3;"></span> Blue</td>
+                    </tr>
+                    <tr>
+                        <td>Ultrasonic Echo</td>
+                        <td><span class="pin-highlight">PIN 12</span></td>
+                        <td>Echo pulse input</td>
+                        <td><span class="wire-color" style="background-color: #4CAF50;"></span> Green</td>
+                    </tr>
+                    <tr>
+                        <td>IR Sensor Left</td>
+                        <td><span class="pin-highlight">A0</span></td>
+                        <td>Left line detection analog</td>
+                        <td><span class="wire-color" style="background-color: #9C27B0;"></span> Purple</td>
+                    </tr>
+                    <tr>
+                        <td>IR Sensor Right</td>
+                        <td><span class="pin-highlight">A1</span></td>
+                        <td>Right line detection analog</td>
+                        <td><span class="wire-color" style="background-color: #9E9E9E;"></span> Gray</td>
+                    </tr>
+                    <tr>
+                        <td>Servo Motor Signal</td>
+                        <td><span class="pin-highlight">PIN 3</span> (PWM)</td>
+                        <td>Steering control signal</td>
+                        <td><span class="wire-color" style="background-color: #FFEB3B;"></span> Yellow</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Camera Installation Guide</h2>
+            <div class="diagram-container">
+                <svg class="wiring-diagram" width="600" height="300" viewBox="0 0 600 300">
+                    <!-- Raspberry Pi -->
+                    <rect x="50" y="50" width="120" height="160" class="raspberry-rect" rx="5"/>
+                    <text x="110" y="70" class="component-label">RASPBERRY PI</text>
+                    
+                    <!-- Camera Port -->
+                    <rect x="170" y="80" width="15" height="5" fill="#666"/>
+                    <text x="190" y="83" class="pin-label">CSI Camera Port</text>
+                    
+                    <!-- Camera Module -->
+                    <rect x="300" y="50" width="100" height="80" class="camera-rect" rx="5"/>
+                    <text x="350" y="70" class="component-label">CAMERA V2</text>
+                    
+                    <!-- Ribbon Cable -->
+                    <rect x="170" y="75" width="130" height="10" fill="#E0E0E0" stroke="#9E9E9E" stroke-width="1"/>
+                    
+                    <!-- Connection Steps -->
+                    <line x1="250" y1="150" x2="300" y2="200" class="wire wire-blue" stroke-dasharray="5,5"/>
+                    <text x="270" y="170" class="pin-label">1. Lift connector latch</text>
+                    
+                    <line x1="350" y1="150" x2="400" y2="200" class="wire wire-green" stroke-dasharray="5,5"/>
+                    <text x="370" y="170" class="pin-label">2. Insert ribbon cable</text>
+                    
+                    <line x1="450" y1="150" x2="500" y2="200" class="wire wire-purple" stroke-dasharray="5,5"/>
+                    <text x="470" y="170" class="pin-label">3. Push latch down</text>
+                    
+                    <!-- Camera Mounting -->
+                    <rect x="400" y="230" width="120" height="40" fill="#BDBDBD" stroke="#757575" stroke-width="2" rx="5"/>
+                    <circle cx="430" cy="250" r="15" class="camera-rect"/>
+                    <text x="460" y="255" class="pin-label">Camera mounted on front</text>
+                </svg>
+                <p><em>Figure 2: Raspberry Pi camera installation and mounting</em></p>
+            </div>
+            
+            <h3>Camera Setup Steps:</h3>
+            <ol>
+                <li><strong>Enable Camera Interface:</strong>
+                    <div class="code-block">
+sudo raspi-config
+# → Interface Options → Camera → Enable
+                    </div>
+                </li>
+                <li><strong>Install Camera Software:</strong>
+                    <div class="code-block">
+sudo apt update
+sudo apt install python3-picamera2 python3-opencv
+                    </div>
+                </li>
+                <li><strong>Test Camera:</strong>
+                    <div class="code-block">
+libcamera-hello --list-cameras
+# Test capture: libcamera-jpeg -o test.jpg
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>Communication Protocol</h2>
+            <div class="diagram-container">
+                <svg class="wiring-diagram" width="700" height="200" viewBox="0 0 700 200">
+                    <!-- Raspberry Pi -->
+                    <rect x="50" y="50" width="100" height="60" class="raspberry-rect" rx="5"/>
+                    <text x="100" y="75" class="component-label">RASPBERRY PI</text>
+                    
+                    <!-- USB Connection -->
+                    <rect x="150" y="60" width="100" height="10" fill="#E0E0E0" stroke="#9E9E9E" stroke-width="1"/>
+                    <text x="200" y="55" class="pin-label">USB Serial Connection</text>
+                    
+                    <!-- Arduino -->
+                    <rect x="250" y="50" width="100" height="60" class="arduino-rect" rx="5"/>
+                    <text x="300" y="75" class="component-label">ARDUINO</text>
+                    
+                    <!-- Data Flow -->
+                    <line x1="100" y1="110" x2="300" y2="110" class="wire wire-blue" marker-end="url(#data-arrow)"/>
+                    <text x="200" y="105" class="pin-label">Commands: "SPEED:50,STEER:20"</text>
+                    
+                    <line x1="300" y1="130" x2="100" y2="130" class="wire wire-green" marker-end="url(#data-arrow)"/>
+                    <text x="200" y="135" class="pin-label">Sensor Data: "DIST:25,LIR:120,RIR:80"</text>
+                    
+                    <!-- Python Code -->
+                    <rect x="400" y="30" width="250" height="140" fill="#2d2d2d" rx="5"/>
+                    <text x="450" y="50" class="pin-label" fill="white">Python Code (Raspberry Pi):</text>
+                    <text x="420" y="70" class="pin-label" fill="#4CAF50" font-family="monospace">import serial</text>
+                    <text x="420" y="85" class="pin-label" fill="#4CAF50" font-family="monospace">arduino = serial.Serial('/dev/ttyUSB0', 9600)</text>
+                    <text x="420" y="100" class="pin-label" fill="#4CAF50" font-family="monospace">arduino.write(b"SPEED:50,STEER:20\n")</text>
+                    <text x="420" y="115" class="pin-label" fill="#4CAF50" font-family="monospace">sensor_data = arduino.readline()</text>
+                </svg>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Complete Connection Summary</h2>
+            <div class="connection-diagram">
+RASPBERRY PI 4 CONNECTIONS:
+===========================
+📷 CAMERA → CSI Camera Port (15-pin ribbon cable)
+🔌 ARDUINO → USB Port (USB A to B cable)
+⚡ POWER → USB-C Port (5V 3A power supply)
+🌐 NETWORK → Ethernet Port or WiFi
+
+ARDUINO UNO PINOUT:
+===================
+DIGITAL PINS:
+─────────────
+PIN 3  (PWM)  → SERVO Signal (Yellow)
+PIN 5  (PWM)  → L298N ENA - Left Motor Speed (Yellow)
+PIN 6  (PWM)  → L298N ENB - Right Motor Speed (White)
+PIN 7         → L298N IN1 - Left Motor Forward (Orange)
+PIN 8         → L298N IN2 - Left Motor Reverse (Red)
+PIN 9         → L298N IN3 - Right Motor Forward (Brown)
+PIN 10        → L298N IN4 - Right Motor Reverse (Black)
+PIN 11        → HC-SR04 Trig (Blue)
+PIN 12        → HC-SR04 Echo (Green)
+
+ANALOG PINS:
+────────────
+A0 → IR Left Sensor (Purple)
+A1 → IR Right Sensor (Gray)
+
+POWER DISTRIBUTION:
+===================
+BATTERY 12V → L298N VCC (Red thick wire)
+BATTERY GND → L298N GND & Arduino GND (Black)
+POWER BANK 5V → Raspberry Pi USB-C
+ARDUINO 5V → All Sensors VCC
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Software Setup</h2>
+            
+            <h3>Raspberry Pi Setup</h3>
+            <div class="code-block">
+# Install required packages
+sudo apt update
+sudo apt install python3-pip python3-opencv python3-picamera2
+
+# Install Python libraries
+pip3 install pyserial numpy torch torchvision
+
+# Enable camera and serial interface
+sudo raspi-config
+# → Interface Options → Camera → Enable
+# → Interface Options → Serial Port → Enable
+            </div>
+
+            <h3>Arduino Code Structure</h3>
+            <div class="code-block">
+// Arduino communicates with Raspberry Pi via Serial
+void setup() {
+  Serial.begin(9600); // Match baud rate with Python code
+}
+
+void loop() {
+  // Read sensors
+  readSensors();
+  
+  // Send sensor data to Raspberry Pi
+  Serial.print("DIST:");
+  Serial.print(ultrasonicDistance);
+  Serial.print(",LIR:");
+  Serial.print(irLeftValue);
+  Serial.print(",RIR:");
+  Serial.println(irRightValue);
+  
+  // Check for commands from Raspberry Pi
+  if (Serial.available()) {
+    String command = Serial.readStringUntil('\n');
+    processCommand(command); // Execute motor commands
+  }
+}
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Autonomous Self-Driving Car Project</strong> &copy; 2024</p>
+            <p>Building AI Course - University of Helsinki</p>
+            <p>Last Updated: December 2024 | Version: 3.0</p>
+            <p><a href="../README.md">Back to Main Project</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Add print functionality
+            const printButton = document.createElement('button');
+            printButton.textContent = 'Print This Guide';
+            printButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #007ACC;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            `;
+            printButton.addEventListener('click', () => window.print());
+            document.body.appendChild(printButton);
+        });
+    </script>
+</body>
+</html>
+```
+
+## Key Additions in This Version:
+
+1. **Raspberry Pi Integration:**
+   - USB serial communication with Arduino
+   - CSI camera port connection
+   - Power management with USB-C
+   - Network connectivity
+
+2. **Camera System:**
+   - Raspberry Pi Camera V2 connection
+   - CSI ribbon cable installation
+   - Camera software setup steps
+   - Mounting position on vehicle
+
+3. **Communication Protocol:**
+   - Serial data exchange between Raspberry Pi and Arduino
+   - Command format for motor control
+   - Sensor data transmission
+   - Python code examples
+
+4. **Power Management:**
+   - Separate power for Raspberry Pi (5V power bank)
+   - Motor power from 12V battery
+   - Proper grounding between systems
+
+5. **Complete System Architecture:**
+   - Shows data flow between components
+   - Visual representation of AI decision pipeline
+   - Integration of computer vision with motor control
+
